@@ -7,6 +7,11 @@ const MeetingSchema = mongoose.Schema(
       type: String,
       required: true,
       trim:true
+    },
+    meetingStartedBy: {
+      type: String,
+      required: true,
+      trim:true
     }
   }
 );

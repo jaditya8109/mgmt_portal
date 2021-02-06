@@ -43,15 +43,21 @@ app.get('/', (req,res)=>{
 
 app.post('/result', (req,res)=>{
     console.log(req.body);
-    let room = req.body.roomName;
-    let name = req.body.displayName;
-    let roomname = new meetingModel(req.body);
-    roomname.save();
+    const roomname = req.body.roomName;
+    const meetingStartedBy = req.body.displayName;
+       
+       const meet = new meetingModel ({
+                        roomName : req.body.roomName,
+                        meetingStartedBy :  req.body.displayName
+                       });
+        console.log('saving = ' + meet);
+        //save meeting
+         meet.save()
+               
     // Encrypt
-    var hashedRoomName = CryptoJS.AES.encrypt(room , 'secret key 123').toString();
-    console.log(hashedRoomName, name);
-    res.render('videoConference', {roomValue: hashedRoomName, nameValue: name});
-    // res.render('jitsimeet', {roomValue: hashedRoomName, nameValue: name});
+    var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    console.log(hashedRoomName, meetingStartedBy);
+    res.render('videoConference', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
 })
 
 app.listen( 1111, ()=>{

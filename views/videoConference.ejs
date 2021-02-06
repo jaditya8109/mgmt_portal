@@ -23,34 +23,14 @@
             };
         apiObj = new JitsiMeetExternalAPI(domain, options);
         })
-        $(document).ready(function(){
-            var participant = apiObj.getParticipantsInfo();
-            str += JSON.stringify(participant);
-            console.log("!!!!!!!!!!! " + "  " + str);
-        })
 
     </script>
 </head>
-<!-- using predefined values in forms but again the problem is ejs cannot access variables from script tag since ejs is rendered 
-   server side and js will execute in browser. You can't pass an javascript variable value to a ejs variable.
-    The EJS template will be rendered on the server before the Javscript is started execution(it will start on browser),-->
-
 <body>
     <h1>Lets chats</h1>
     <h2>My jitsi meeting</h2>
     <div id="meet">
         meeting
     </div>
-    
-    <div>
-        <form action="saveData" method="POST"> 
-            <pre> 
-                participantArray    : <input type="text" name="participantArray"
-                            value = '<%= stupid %>' > <br>           
-                <input type="submit" value="Submit Form">  
-            </pre> 
-        </form>
-    </div>
-
 </body>
 </html>
