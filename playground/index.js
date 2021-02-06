@@ -22,5 +22,11 @@ async function output (){
     var value =  apiObj.getNumberOfParticipants()
     var participant = apiObj.getParticipantsInfo();
     str = JSON.stringify(participant);
-    console.log("!!!!!!!!!!! " + "  " + str);
+    console.log("!!!!!!!!!!! api" + "  " + participant);
+    console.log("!!!!!!!!!!! stringed api" + "  " + str);
+    console.log("????? typeof participant is" + "  " + typeof participant);
+    str2 = JSON.parse(str);
+    console.log("!!!!!!!!!!! parsed stringed api " + "  " + str2);
+    str1 = JSON.parse(participant);
+    console.log("!!!!!!!!!!! parsed participant " + "  " + str1);
 } 

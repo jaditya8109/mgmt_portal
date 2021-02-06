@@ -11,6 +11,8 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine' , 'ejs');
 
+
+
 //db.js
 
 const mongoose = require('mongoose')
@@ -29,39 +31,30 @@ mongoose.connect(url,connectionParams)
     .catch( (err) => {
         console.error(`Error connecting to the database. \n${err}`);
     })
-//model
+
+// model
 const meetingModel = require('./models/meeting');
+const meeting2Model = require('./models/meeting2');
 
 //routes
 app.get('/', (req,res)=>{
     res.render('enterRoomName');
 })
 
-// app.get('/index', (req,res)=>{
-//     res.render('videoConference');
-// })
 
 app.post('/result', (req,res)=>{
     console.log(req.body);
     let room = req.body.roomName;
     let name = req.body.displayName;
-    let roomname = new meetingModel(req.body);
-    roomname.save();
+    // let roomname = new meetingModel(req.body);
+    // roomname.save();
     // Encrypt
     var hashedRoomName = CryptoJS.AES.encrypt(room , 'secret key 123').toString();
     console.log(hashedRoomName, name);
-    res.render('videoConference', {roomValue: hashedRoomName, nameValue: name});
-    // res.render('jitsimeet', {roomValue: hashedRoomName, nameValue: name});
+    res.render('indexy', {roomValue: hashedRoomName, nameValue: name});
 })
+
 
 app.listen( 1111, ()=>{
     console.log('connected successfully')
 })
-
-
-
-// Decrypt
-// var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-// var originalText = bytes.toString(CryptoJS.enc.Utf8);
-// console.log(originalText); // 'my message'
-
