@@ -45,10 +45,12 @@ app.post('/result', (req,res)=>{
     console.log(req.body);
     const roomname = req.body.roomName;
     const meetingStartedBy = req.body.displayName;
+    const status = "active";
        
-       const meet = new meetingModel ({
+       let meet = new meetingModel ({
                         roomName : req.body.roomName,
-                        meetingStartedBy :  req.body.displayName
+                        meetingStartedBy :  req.body.displayName,
+                        status : "active"
                        });
         console.log('saving = ' + meet);
         //save meeting
@@ -60,14 +62,34 @@ app.post('/result', (req,res)=>{
     res.render('videoConference', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
 })
 
+app.post('/result/endMeet', async function(req, res, next) {
+    
+    const  removeRoom = req.body.remove;
+    // Decrypt
+    var bytes  = CryptoJS.AES.decrypt(removeRoom, 'secret key 123');
+    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    console.log(originalText); // 'my message'
+    //update status
+    // let meet = mongoose.model('meeting');
+    let meetingData = await  meetingModel.findOne({roomName:originalText})
+    meetingData.status = "inactive"
+    await meetingData.save();
+
+    // meetingModel.findOneAndUpdate(
+    //     { 'roomName' : originalText }, // specifies the document to update
+    //     {
+    //       $set: {  "status" : "inactive" }
+    //     }
+    // )
+    res.send("meeting ended bye bye hola!" + req.body.remove);
+    console.log('updated');
+});
+
+
 app.listen( 1111, ()=>{
     console.log('connected successfully')
 })
 
 
 
-// Decrypt
-// var bytes  = CryptoJS.AES.decrypt(ciphertext, 'secret key 123');
-// var originalText = bytes.toString(CryptoJS.enc.Utf8);
-// console.log(originalText); // 'my message'
 

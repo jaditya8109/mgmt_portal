@@ -12,6 +12,11 @@ const MeetingSchema = mongoose.Schema(
       type: String,
       required: true,
       trim:true
+    },
+    status: {
+      type: String,
+      required: true,
+      trim:true
     }
   }
 );

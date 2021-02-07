@@ -8,31 +8,44 @@
     <script src='https://meet.jit.si/external_api.js'></script>
     <script>
         var apiObj = null;
+        const rname = 'hsdbBFjsDVbS';
         $(document).ready(function(){
             const domain = 'meet.jit.si';
             const options = {
-                roomName : `<%=roomValue%>` ,
+                roomName : rname ,
                 width: 1400,
                 height: 700,
                 parentNode: document.querySelector('#meet'),
                 userInfo: {
-                displayName: `<%=nameValue%>`
+                displayName: 'aditya jain'
             },
-            };
+            configOverwrite:{
+            doNotStoreRoom: true,
+            startVideoMuted: 0,
+            startWithVideoMuted: true,
+            startWithAudioMuted: true,
+            enableWelcomePage: false,
+            prejoinPageEnabled: false,
+            disableRemoteMute: true,
+            remoteVideoMenu: {
+                disableKick: true
+            },
+        }
+        };
         apiObj = new JitsiMeetExternalAPI(domain, options);
-
         $("#btnHangup").on('click', function () {
             apiObj.executeCommand('hangup');
-            $.post( "/result/endMeet",
-                {remove : `<%=roomValue%>`},
-                function(data,status){
-                alert("Data: " + data + "\nStatus: " + status);
-                });
-                
+            window.alert(rname);
+            $.ajax({
+                method: "POST",
+                url: "/users/delete",
+                data: {"userId": userId},
+            });    
         });
 
         })
 
+        
     </script>
 </head>
 <body>
