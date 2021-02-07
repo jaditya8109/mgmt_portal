@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Meet</title>
+    <title>join meet</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src='https://meet.jit.si/external_api.js'></script>
     <script>
@@ -15,24 +15,9 @@
                 width: 1400,
                 height: 700,
                 parentNode: document.querySelector('#meet'),
-                userInfo: {
-                displayName: `<%=nameValue%>`
-            },
             };
-        apiObj = new JitsiMeetExternalAPI(domain, options);
-
-        $("#btnHangup").on('click', function () {
-            apiObj.executeCommand('hangup');
-            $.post( "/result/endMeet",
-                {remove : `<%=roomValue%>`},
-                function(data,status){
-                alert("Data: " + data + "\nStatus: " + status);
-                });
-                
+        apiObj = new JitsiMeetExternalAPI(domain, options);                
         });
-
-        })
-
     </script>
 </head>
 <body>
@@ -40,9 +25,6 @@
     <h2>My jitsi meeting</h2>
     <div class="container">
         <div id='meet'></div>
-        <div id="toolbox" class="toolbox">
-            <button id='btnHangup'>Hangup</button>
-        </div>
     </div>
 </body>
 </html>

@@ -4,9 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>active meetings</title>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        </style>
 </head>
 <body>
-    FOR ACTIVE MEETINGS DETAILS U HAVE TO HAVE DATABASE WHICH STORES ALL THE INPUT OF FORM OF ROOM NAME AND
-     FROM THERE YOU CAN HAVE ACTIVE MEETINGS
+    <table>
+        <tr>
+          <th>Room Name</th>
+          <th>Meeting Started By</th>
+          <th>Status</th>
+          <th>butons</th>
+        </tr>
+        <% meetings.forEach(function (meeting) { %>
+        <tr>
+          <td><%= meeting.roomName %></td>
+          <td><%= meeting.meetingStartedBy %></td>
+          <td><%= meeting.status %></td>
+          <td> <a href="joinMeet?mid=<%= meeting.roomName %>"> <button type="button" id="btnJoinMeet">Join now</button> </a></td>
+        </tr>
+        <% }) %>
+      </table>  
 </body>
 </html>

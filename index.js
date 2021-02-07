@@ -15,14 +15,14 @@ app.set('view engine' , 'ejs');
 
 const mongoose = require('mongoose')
 
-const url = `mongodb+srv://jaditya8109:admin@cluster0.dsozk.mongodb.net/MGMTportal?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://jaditya8109:admin@cluster0.dsozk.mongodb.net/MGMTportal?retryWrites=true&w=majority`;
 
 const connectionParams={
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true 
 }
-mongoose.connect(url,connectionParams)
+mongoose.connect(uri,connectionParams)
     .then( () => {
         console.log('Connected to database ')
     })
@@ -31,18 +31,18 @@ mongoose.connect(url,connectionParams)
     })
 //model
 const meetingModel = require('./models/meeting');
+const { request } = require('express');
 
 //routes
 app.get('/', (req,res)=>{
+    res.render('landing');
+})
+
+app.get('/createMeet', (req,res)=>{
     res.render('enterRoomName');
 })
 
-// app.get('/index', (req,res)=>{
-//     res.render('videoConference');
-// })
-
 app.post('/result', (req,res)=>{
-    console.log(req.body);
     const roomname = req.body.roomName;
     const meetingStartedBy = req.body.displayName;
     const status = "active";
@@ -58,7 +58,8 @@ app.post('/result', (req,res)=>{
                
     // Encrypt
     var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
-    console.log(hashedRoomName, meetingStartedBy);
+    console.log('created roomname' + roomname);
+    console.log('created hashed room' + hashedRoomName + " " + 'meeting started by:' + meetingStartedBy) ;
     res.render('videoConference', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
 })
 
@@ -70,21 +71,54 @@ app.post('/result/endMeet', async function(req, res, next) {
     var originalText = bytes.toString(CryptoJS.enc.Utf8);
     console.log(originalText); // 'my message'
     //update status
-    // let meet = mongoose.model('meeting');
     let meetingData = await  meetingModel.findOne({roomName:originalText})
     meetingData.status = "inactive"
     await meetingData.save();
 
-    // meetingModel.findOneAndUpdate(
-    //     { 'roomName' : originalText }, // specifies the document to update
-    //     {
-    //       $set: {  "status" : "inactive" }
-    //     }
-    // )
     res.send("meeting ended bye bye hola!" + req.body.remove);
     console.log('updated');
 });
 
+app.get('/activeMeetings' , function(req, res) {
+    // mongoose operations are asynchronous, so you need to wait 
+    meetingModel.find({}, function(err, data) {
+        // note that data is an array of objects, not a single object!
+        res.render('activeMeetings.ejs', {
+            meetings: data
+        });
+    });
+});
+
+app.get('/joinMeet', (req,res)=>{
+    let rname = req.query.mid ;
+    console.log('joining meet with roomname = ' + rname);
+    // Encrypt
+    // var hashedRoomName = CryptoJS.AES.encrypt(rname , 'secret key 123').toString();
+    // console.log('joining room hashed' + hashedRoomName);
+    // res.render('joinMeet', {roomValue: hashedRoomName});
+
+    res.render('joinParticipantName.ejs' , {roomName : rname});
+})
+
+app.post('/join', (req,res)=>{
+    let roomname = req.body.roomName;
+    let meetingStartedBy = req.body.displayName;
+       
+    //    let meet = new meetingModel ({
+    //                     roomName : req.body.roomName,
+    //                     meetingStartedBy :  req.body.displayName,
+    //                     status : "active"
+    //                    });
+    //     console.log('saving = ' + meet);
+    //     //save meeting
+    //      meet.save()
+               
+    // Encrypt
+    var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    console.log('joining roomname' + roomname);
+    console.log('joined hashed room' + hashedRoomName + " " + 'meeting joined by:' + meetingStartedBy) ;
+    res.render('joinMeet', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
+})
 
 app.listen( 1111, ()=>{
     console.log('connected successfully')
