@@ -57,7 +57,8 @@ app.post('/result', (req,res)=>{
          meet.save()
                
     // Encrypt
-    var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    // var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    var hashedRoomName = Buffer.from(roomname).toString('base64');
     console.log('created roomname' + roomname);
     console.log('created hashed room' + hashedRoomName + " " + 'meeting started by:' + meetingStartedBy) ;
     res.render('videoConference', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
@@ -67,8 +68,9 @@ app.post('/result/endMeet', async function(req, res, next) {
     
     const  removeRoom = req.body.remove;
     // Decrypt
-    var bytes  = CryptoJS.AES.decrypt(removeRoom, 'secret key 123');
-    var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    // var bytes  = CryptoJS.AES.decrypt(removeRoom, 'secret key 123');
+    // var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    var originalText = Buffer.from(removeRoom, 'base64').toString();
     console.log(originalText); // 'my message'
     //update status
     let meetingData = await  meetingModel.findOne({roomName:originalText})
@@ -102,7 +104,7 @@ app.get('/joinMeet', (req,res)=>{
 
 app.post('/join', (req,res)=>{
     let roomname = req.body.roomName;
-    let meetingStartedBy = req.body.displayName;
+    let meetingJoinedBy = req.body.displayName;
        
     //    let meet = new meetingModel ({
     //                     roomName : req.body.roomName,
@@ -114,10 +116,11 @@ app.post('/join', (req,res)=>{
     //      meet.save()
                
     // Encrypt
-    var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    // var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    var hashedRoomName =Buffer.from(roomname).toString('base64');
     console.log('joining roomname' + roomname);
-    console.log('joined hashed room' + hashedRoomName + " " + 'meeting joined by:' + meetingStartedBy) ;
-    res.render('joinMeet', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
+    console.log('joined hashed room' + hashedRoomName + " " + 'meeting joined by:' + meetingJoinedBy) ;
+    res.render('joinMeet', {roomValue: hashedRoomName, nameValue: meetingJoinedBy});
 })
 
 app.listen( 1111, ()=>{

@@ -15,6 +15,9 @@
                 width: 1400,
                 height: 700,
                 parentNode: document.querySelector('#meet'),
+                userInfo: {
+                displayName: `<%=nameValue%>`
+            },
             };
         apiObj = new JitsiMeetExternalAPI(domain, options);                
         });
