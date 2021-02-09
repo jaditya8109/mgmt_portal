@@ -1,3 +1,4 @@
+const { text } = require('body-parser');
 const mongoose = require('mongoose')
 
 
@@ -17,7 +18,16 @@ const MeetingSchema = mongoose.Schema(
       type: String,
       required: true,
       trim:true
-    }
+    },
+    participants: [
+      {
+        joinee : {
+          type: String,
+          required: true,
+          trim:true
+        }
+      }
+    ]
   }
 );
 

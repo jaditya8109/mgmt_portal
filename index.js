@@ -102,19 +102,24 @@ app.get('/joinMeet', (req,res)=>{
     res.render('joinParticipantName.ejs' , {roomName : rname});
 })
 
-app.post('/join', (req,res)=>{
+app.post('/join', async function(req,res){
     let roomname = req.body.roomName;
     let meetingJoinedBy = req.body.displayName;
        
-    //    let meet = new meetingModel ({
-    //                     roomName : req.body.roomName,
-    //                     meetingStartedBy :  req.body.displayName,
-    //                     status : "active"
-    //                    });
-    //     console.log('saving = ' + meet);
-    //     //save meeting
-    //      meet.save()
-               
+    //update status
+    let meetingData = await  meetingModel.findOne({roomName: roomname});
+    await meetingData.update({
+        
+            $push : {participants : {joinee : meetingJoinedBy}}
+        
+    })
+    .catch(err => console.log(err));  ;
+    // meetingData.participants += {meetingJoinedBy};
+    
+    meetingData.save();
+    
+    
+
     // Encrypt
     // var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
     var hashedRoomName =Buffer.from(roomname).toString('base64');
