@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>meet details</title>
+</head>
+<body>
+    <h2>list of participants who attended the meeting</h2>
+     <% meetingData.participants.forEach(function (participant){ %>
+     <h3><%=participant.joinee %></h3>
+     <% }) %>
+
+     <h2>Add Mom</h2>
+     <form method="POST" action="/postMOM">
+        <label for="roomName">Meet Name</label>
+        <input type="text" class="form-control" id="roomName" name="roomName" value="<%=roomname%>">
+        <textarea id="mom" name="mom" rows="10" cols="30">Add your minutes of meeting here.</textarea>
+        <br><br>
+        <button type="submit" class="btn btn-primary">Submit</button>
+     </form>
+</body>
+</html>

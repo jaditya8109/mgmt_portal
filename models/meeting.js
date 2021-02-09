@@ -27,7 +27,10 @@ const MeetingSchema = mongoose.Schema(
           trim:true
         }
       }
-    ]
+    ],
+    MOM: {
+      type: String
+    }
   }
 );
 

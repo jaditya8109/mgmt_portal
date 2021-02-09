@@ -24,7 +24,7 @@ const connectionParams={
 }
 mongoose.connect(uri,connectionParams)
     .then( () => {
-        console.log('Connected to database ')
+        console.log('Connected to database')
     })
     .catch( (err) => {
         console.error(`Error connecting to the database. \n${err}`);
@@ -55,9 +55,7 @@ app.post('/result', (req,res)=>{
         console.log('saving = ' + meet);
         //save meeting
          meet.save()
-               
-    // Encrypt
-    // var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
+    
     var hashedRoomName = Buffer.from(roomname).toString('base64');
     console.log('created roomname' + roomname);
     console.log('created hashed room' + hashedRoomName + " " + 'meeting started by:' + meetingStartedBy) ;
@@ -67,11 +65,8 @@ app.post('/result', (req,res)=>{
 app.post('/result/endMeet', async function(req, res, next) {
     
     const  removeRoom = req.body.remove;
-    // Decrypt
-    // var bytes  = CryptoJS.AES.decrypt(removeRoom, 'secret key 123');
-    // var originalText = bytes.toString(CryptoJS.enc.Utf8);
     var originalText = Buffer.from(removeRoom, 'base64').toString();
-    console.log(originalText); // 'my message'
+    console.log(originalText);
     //update status
     let meetingData = await  meetingModel.findOne({roomName:originalText})
     meetingData.status = "inactive"
@@ -94,11 +89,6 @@ app.get('/activeMeetings' , function(req, res) {
 app.get('/joinMeet', (req,res)=>{
     let rname = req.query.mid ;
     console.log('joining meet with roomname = ' + rname);
-    // Encrypt
-    // var hashedRoomName = CryptoJS.AES.encrypt(rname , 'secret key 123').toString();
-    // console.log('joining room hashed' + hashedRoomName);
-    // res.render('joinMeet', {roomValue: hashedRoomName});
-
     res.render('joinParticipantName.ejs' , {roomName : rname});
 })
 
@@ -106,7 +96,7 @@ app.post('/join', async function(req,res){
     let roomname = req.body.roomName;
     let meetingJoinedBy = req.body.displayName;
        
-    //update status
+    //update participants
     let meetingData = await  meetingModel.findOne({roomName: roomname});
     await meetingData.update({
         
@@ -114,19 +104,42 @@ app.post('/join', async function(req,res){
         
     })
     .catch(err => console.log(err));  ;
-    // meetingData.participants += {meetingJoinedBy};
     
     meetingData.save();
     
-    
-
-    // Encrypt
-    // var hashedRoomName = CryptoJS.AES.encrypt(roomname , 'secret key 123').toString();
     var hashedRoomName =Buffer.from(roomname).toString('base64');
     console.log('joining roomname' + roomname);
     console.log('joined hashed room' + hashedRoomName + " " + 'meeting joined by:' + meetingJoinedBy) ;
     res.render('joinMeet', {roomValue: hashedRoomName, nameValue: meetingJoinedBy});
 })
+
+app.get("/meetDetails" , (req,res)=>{
+    let roomname = req.query.rname ;
+    meetingModel.findOne({roomName: roomname}, function(err, data) {
+        // note that data is an array of objects, not a single object!
+        console.log(data);
+        res.render('meetDetails.ejs' , {meetingData : data , roomname: roomname});
+    });
+})
+
+app.post("/postMOM", async function(req,res){
+    const mom = req.body.mom;
+    const roomname = req.body.roomName;   
+    
+    //update mom
+    let meetingData = await  meetingModel.findOne({roomName: roomname});
+    await meetingData.update({
+        
+            $set : {MOM : mom}
+        
+    })
+    .catch(err => console.log(err));  ;
+    
+    await meetingData.save();
+
+    res.send("mom saved!")
+})
+
 
 app.listen( 1111, ()=>{
     console.log('connected successfully')
