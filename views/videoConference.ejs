@@ -23,7 +23,7 @@
 
         $("#btnHangup").on('click', function () {
             apiObj.executeCommand('hangup');
-            $.post( "/result/endMeet",
+            $.post( "/createMeet/endMeet",
                 {remove : `<%=roomValue%>`},
                 function(data,status){
                 alert("Data: " + data + "\nStatus: " + status);

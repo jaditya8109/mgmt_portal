@@ -1,6 +1,5 @@
 const express = require('express');
 var bodyParser = require('body-parser');
-var CryptoJS = require("crypto-js");
 const app = express();
 
 app.use(bodyParser.urlencoded({
@@ -12,11 +11,8 @@ app.set('views', __dirname + '/views');
 app.set('view engine' , 'ejs');
 
 //db.js
-
 const mongoose = require('mongoose')
-
 const uri = `mongodb+srv://jaditya8109:admin@cluster0.dsozk.mongodb.net/MGMTportal?retryWrites=true&w=majority`;
-
 const connectionParams={
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -29,9 +25,9 @@ mongoose.connect(uri,connectionParams)
     .catch( (err) => {
         console.error(`Error connecting to the database. \n${err}`);
     })
+
 //model
 const meetingModel = require('./models/meeting');
-const { request } = require('express');
 
 //routes
 app.get('/', (req,res)=>{
@@ -42,44 +38,34 @@ app.get('/createMeet', (req,res)=>{
     res.render('enterRoomName');
 })
 
-app.post('/result', (req,res)=>{
+app.post('/createMeet', function(req,res){
     const roomname = req.body.roomName;
     const meetingStartedBy = req.body.displayName;
-    const status = "active";
        
-       let meet = new meetingModel ({
-                        roomName : req.body.roomName,
-                        meetingStartedBy :  req.body.displayName,
-                        status : "active"
-                       });
-        console.log('saving = ' + meet);
-        //save meeting
-         meet.save()
+    let meet = new meetingModel ({
+                roomName : req.body.roomName,
+                meetingStartedBy :  req.body.displayName,
+                status : "active"
+                });
+    meet.save()
     
     var hashedRoomName = Buffer.from(roomname).toString('base64');
-    console.log('created roomname' + roomname);
-    console.log('created hashed room' + hashedRoomName + " " + 'meeting started by:' + meetingStartedBy) ;
     res.render('videoConference', {roomValue: hashedRoomName, nameValue: meetingStartedBy});
 })
 
-app.post('/result/endMeet', async function(req, res, next) {
-    
+app.post('/createMeet/endMeet', async function(req, res, next) {
     const  removeRoom = req.body.remove;
     var originalText = Buffer.from(removeRoom, 'base64').toString();
-    console.log(originalText);
     //update status
     let meetingData = await  meetingModel.findOne({roomName:originalText})
     meetingData.status = "inactive"
     await meetingData.save();
 
     res.send("meeting ended bye bye hola!" + req.body.remove);
-    console.log('updated');
 });
 
 app.get('/activeMeetings' , function(req, res) {
-    // mongoose operations are asynchronous, so you need to wait 
     meetingModel.find({}, function(err, data) {
-        // note that data is an array of objects, not a single object!
         res.render('activeMeetings.ejs', {
             meetings: data
         });
@@ -88,36 +74,27 @@ app.get('/activeMeetings' , function(req, res) {
 
 app.get('/joinMeet', (req,res)=>{
     let rname = req.query.mid ;
-    console.log('joining meet with roomname = ' + rname);
     res.render('joinParticipantName.ejs' , {roomName : rname});
 })
 
-app.post('/join', async function(req,res){
+app.post('/joinMeet', async function(req,res){
     let roomname = req.body.roomName;
     let meetingJoinedBy = req.body.displayName;
-       
     //update participants
     let meetingData = await  meetingModel.findOne({roomName: roomname});
-    await meetingData.update({
-        
-            $push : {participants : {joinee : meetingJoinedBy}}
-        
+    await meetingData.updateOne({
+        $push : {participants : {joinee : meetingJoinedBy}}
     })
     .catch(err => console.log(err));  ;
-    
     meetingData.save();
     
     var hashedRoomName =Buffer.from(roomname).toString('base64');
-    console.log('joining roomname' + roomname);
-    console.log('joined hashed room' + hashedRoomName + " " + 'meeting joined by:' + meetingJoinedBy) ;
     res.render('joinMeet', {roomValue: hashedRoomName, nameValue: meetingJoinedBy});
 })
 
 app.get("/meetDetails" , (req,res)=>{
     let roomname = req.query.rname ;
     meetingModel.findOne({roomName: roomname}, function(err, data) {
-        // note that data is an array of objects, not a single object!
-        console.log(data);
         res.render('meetDetails.ejs' , {meetingData : data , roomname: roomname});
     });
 })
@@ -125,18 +102,13 @@ app.get("/meetDetails" , (req,res)=>{
 app.post("/postMOM", async function(req,res){
     const mom = req.body.mom;
     const roomname = req.body.roomName;   
-    
     //update mom
     let meetingData = await  meetingModel.findOne({roomName: roomname});
-    await meetingData.update({
-        
-            $set : {MOM : mom}
-        
+    await meetingData.updateOne({
+        $set : {MOM : mom}
     })
     .catch(err => console.log(err));  ;
-    
     await meetingData.save();
-
     res.send("mom saved!")
 })
 
